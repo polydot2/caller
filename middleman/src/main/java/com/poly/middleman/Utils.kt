@@ -12,27 +12,46 @@ fun handleIntent(activity: Activity, intent: Intent): Pair<String, String> {
     val targetIntent = intent.getStringExtra("targetIntent") // Par exemple, "com.example.targetapp"
     val uidResult = intent.getStringExtra("uidResult")
 
-    if (targetIntent == null || uidResult == null) {
+    if (targetIntent == null) {
         val data = Intent().apply {
-            bundleOf("data" to "targetIntent est null ?")
+            putExtras(
+                bundleOf("data" to "targetIntent est null ?")
+            )
         }
         activity.setResult(RESULT_OK, data)
-        Log.d("ResultTag_UID:$uidResult", "targetIntent est null ?")
+        foreachExtras(data) { key, value -> Log.d("ResultTag_UID:$uidResult", "$key:$value") }
+        activity.finish()
+    }
+
+    if (uidResult == null) {
+        val data = Intent().apply {
+            putExtras(
+                bundleOf("data" to "uidResult est null ?")
+            )
+        }
+        activity.setResult(RESULT_OK, data)
+        foreachExtras(data) { key, value -> Log.d("ResultTag_UID:$uidResult", "$key:$value") }
         activity.finish()
     }
 
     if (targetIntent == "com.poly.intent.middleman") {
+        Log.d("ResultTag_UID:$uidResult", "La cible est soi même \uD83E\uDD17")
         val data = Intent().apply {
-            bundleOf("data" to data)
+            putExtras(
+                bundleOf(
+                    "status" to "middleman est correctement installé :)",
+                    "version" to "v1.0.0",
+                    "a bientot" to "\uD83D\uDC4B"
+                )
+            )
         }
         activity.setResult(RESULT_OK, data)
-        Log.d("ResultTag_UID:$uidResult", "middleman v1.0.0 est correctement installé :)")
+        foreachExtras(data) { key, value -> Log.d("ResultTag_UID:$uidResult", "$key:$value") }
         activity.finish()
     }
 
-    return targetIntent!! to uidResult!!
+    return Pair(targetIntent!!, uidResult!!)
 }
-
 
 fun String.hidePackage(): String {
     return this.split(".").last()
@@ -46,30 +65,53 @@ fun String.getPrefix(): String {
         list.subList(0, list.size - 1).joinToString(".")
 }
 
-fun createForwardIntent(targetIntent: String, initialIntent: Intent): Intent {
-    return initialIntent.apply {
-        action = targetIntent
-        removeExtra("targetIntent")
-        removeExtra("uidResult")
-    }
-}
-
-fun forwardIntent(forwardIntent: ManagedActivityResultLauncher<Intent, ActivityResult>, secondIntent: Intent) {
-    try {
-        forwardIntent.launch(secondIntent)
+fun createForwardIntent(targetIntent: String, initialIntent: Intent): Intent? {
+    return try {
+        val forwardIntent = Intent(targetIntent).apply {
+            addCategory(Intent.CATEGORY_DEFAULT)
+            initialIntent.extras?.keySet()?.forEach { key ->
+                if (key != "targetIntent" && key != "uidResult") {
+                    putExtra(key, initialIntent.extras?.get(key)?.toString())
+                }
+            }
+        }
+        Log.d("TAGTAG", "Forward Intent créé avec action: $targetIntent")
+        forwardIntent
     } catch (e: Exception) {
-        Log.e("TAG", "Erreur lors du lancement de l'Intent : ${e.message}")
+        Log.e("TAGTAG", "Erreur lors de la création de l'intent cible: ${e.message}")
+        null
     }
 }
 
-fun getValueToString(value: Any): String {
-    return when (value) {
-        is String -> value
-        is Boolean -> value.toString()
-        is Int -> value.toString()
-        is Long -> value.toString()
-        is Float -> value.toString()
-        is Double -> value.toString()
-        else -> "Type non supporté: ${value.javaClass.simpleName}"
+fun forwardIntent(launcher: ManagedActivityResultLauncher<Intent, ActivityResult>, intent: Intent) {
+    try {
+        Log.d("TAGTAG", "Lancement de l'Intent avec action: ${intent.action}")
+        launcher.launch(intent)
+    } catch (e: Exception) {
+        Log.e("TAGTAG", "Erreur lors du lancement de l'Intent: ${e.message}")
+    }
+}
+
+fun visualizeExtras(intent: Intent): Map<String, String>? {
+    return intent.extras?.let { bundle ->
+        buildMap {
+            bundle.keySet().forEach { key ->
+                // Exclure targetIntent et uidResult si nécessaire
+                if (key != "targetIntent" && key != "uidResult") {
+                    val value = bundle.get(key)
+                    // Convertir la valeur en String de manière sécurisée
+                    put(key, value?.toString() ?: "null")
+                }
+            }
+        }
+    }
+}
+
+fun foreachExtras(intent: Intent, callback: (String, String) -> Unit) {
+    intent.extras?.let { bundle ->
+        bundle.keySet().forEach { key ->
+            val value = bundle.get(key)?.toString() ?: "null"
+            callback(key, value)
+        }
     }
 }
