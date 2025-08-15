@@ -4,6 +4,7 @@ import android.R
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlin.random.Random
 
 
 class PersistanceRepository {
@@ -67,14 +68,7 @@ object Configurations {
             tag = "module1",
             intentName = "Digitalization",
             prefix = "Digitalization.",
-            extras = listOf(
-                ExtraInput.BooleanInput("label boolean", "techboolean", true),
-                ExtraInput.FloatInput("label float", "techfloat", 1f),
-                ExtraInput.IntInput("label int", "techint", 1),
-                ExtraInput.ListStringInput("label array", "techarray", listOf("es", "fr")),
-                ExtraInput.StringInput("label json", "techjson", "{\"key\":\"value\"}"),
-                ExtraInput.StringInput("label enum", "techenum", "ONE", listOf("ONE", "TWO")),
-            )
+            extras = generateRandomExtraInputs(50)
         ),
         Configuration(
             name = "CheckID variant1",
@@ -111,6 +105,55 @@ object Configurations {
             )
         ),
     )
+}
+
+fun generateRandomExtraInputs(count: Int): List<ExtraInput> {
+    val types = listOf("Boolean", "Float", "Int", "ListString", "String", "Enum")
+    val enumOptions = listOf("ALPHA", "BETA", "GAMMA", "DELTA")
+    val random = Random.Default
+
+    return List(count) { index ->
+        when (types.random()) {
+            "Boolean" -> ExtraInput.BooleanInput(
+                label = "Boolean Label $index",
+                key = "bool$index",
+                defaultValue = random.nextBoolean()
+            )
+            "Float" -> ExtraInput.FloatInput(
+                label = "Float Label $index",
+                key = "float$index",
+                defaultValue = random.nextFloat() * 100f
+            )
+            "Int" -> ExtraInput.IntInput(
+                label = "Int Label $index",
+                key = "int$index",
+                defaultValue = random.nextInt(1, 1000)
+            )
+            "ListString" -> ExtraInput.ListStringInput(
+                label = "Array Label $index",
+                key = "array$index",
+                defaultValue = List(random.nextInt(1, 5)) { "Item${random.nextInt(1, 10)}" }
+            )
+            "String" -> ExtraInput.StringInput(
+                label = "String Label $index",
+                key = "string$index",
+                defaultValue = "Value $index",
+                options = null
+            )
+            "Enum" -> ExtraInput.StringInput(
+                label = "Enum Label $index",
+                key = "enum$index",
+                defaultValue = enumOptions.random(),
+                options = enumOptions
+            )
+            else -> ExtraInput.StringInput(
+                label = "Default Label $index",
+                key = "default$index",
+                defaultValue = "Default $index",
+                options = null
+            )
+        }
+    }
 }
 
 data class Configuration(
