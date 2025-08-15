@@ -15,7 +15,7 @@ class SaveConfigurationUsecase(
     private val repository: SpecificRepository
 ) {
     operator fun invoke(configuration: Configuration) {
-        repository.save(configuration)
+        repository.update(configuration)
     }
 }
 

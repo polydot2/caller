@@ -26,7 +26,6 @@ fun Dropdown(
     textStyle: TextStyle = TextStyle.Default
 ) {
     var expanded by remember { mutableStateOf(false) }
-    var selectedOption by remember { mutableStateOf(value) }
 
     ExposedDropdownMenuBox(
         expanded = expanded,
@@ -34,7 +33,7 @@ fun Dropdown(
         modifier = modifier
     ) {
         OutlinedTextField(
-            value = selectedOption,
+            value = value,
             onValueChange = { /* Read-only, no direct changes */ },
             label = { Text(label) },
             readOnly = true,
@@ -52,7 +51,6 @@ fun Dropdown(
                 DropdownMenuItem(
                     text = { Text(option, style = textStyle) },
                     onClick = {
-                        selectedOption = option
                         onValueChange(option)
                         expanded = false
                     }

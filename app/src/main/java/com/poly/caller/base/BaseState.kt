@@ -1,8 +1,8 @@
-package com.poly.caller.screen1
+package com.poly.caller.base
 
 import com.poly.caller.model.Configuration
 
-data class ScreenAScreenState(
+data class BaseScreenState(
     val isLoading: Boolean,
     val config: Configuration?, // current configuration
     val isModified: Boolean,

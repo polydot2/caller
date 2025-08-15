@@ -14,15 +14,11 @@ class PersistanceRepository {
     }
 
     fun save(name: String, configuration: Configuration) {
-        val existingConfiguration = Configurations.all.firstOrNull { it.name == name }
+        // Supprimer toutes les configurations existantes avec le même name et tag
+        Configurations.all.removeAll { it.name == name && it.tag == configuration.tag }
 
-        // already exist remove
-        existingConfiguration?.let {
-            Configurations.all.remove(it)
-        }
-
-        // push a new configuration
-        Configurations.all.add(configuration.copy())
+        // Ajouter la nouvelle configuration avec le name spécifié
+        Configurations.all.add(configuration.copy(name = name))
     }
 
     fun delete(name: String) {
@@ -42,14 +38,14 @@ class SpecificRepository(
         println("SpecificRepository created for module: $name")
     }
 
-    private val configuration = MutableStateFlow(Configurations.all.firstOrNull { it.tag == name && it.name == "default" }?.copy())
+    private val configuration = MutableStateFlow(Configurations.all.firstOrNull { it.tag == name && it.name == "default" })
 
     fun get(): Configuration? {
         return configuration.value
     }
 
-    fun save(configurationToSaved: Configuration) {
-        configuration.value = configurationToSaved.copy()
+    fun update(configurationToSaved: Configuration) {
+        configuration.value = configurationToSaved
     }
 
     fun observe(): StateFlow<Configuration?> {
@@ -57,19 +53,10 @@ class SpecificRepository(
     }
 
     fun load(name: String, tag: String) {
-        configuration.value = Configurations.all.firstOrNull { it.tag == tag && it.name == name }?.copy()
+        configuration.value = Configurations.all.firstOrNull { it.tag == tag && it.name == name }
     }
 }
 
-data class Configuration(
-    val name: String,
-    val tag: String,
-    val intentName: String,
-    val prefix: String,
-    val extras: List<ExtraInput>
-)
-
-//
 object Configurations {
     val all = mutableListOf(
         Configuration(
@@ -78,12 +65,22 @@ object Configurations {
             intentName = "Digitalization",
             prefix = "Digitalization.",
             extras = listOf(
-                ExtraInput("label boolean", "techboolean", true),
-                ExtraInput("label float", "techfloat", 1f),
-                ExtraInput("label int", "techint", 1),
-                ExtraInput("label array", "techarray", listOf("es", "fr")),
-                ExtraInput("label json", "techjson", "{\"key\"=\"value\"}"),
-                ExtraInput("label enum", "techenum", "ONE", listOf("ONE", "TWO")),
+                ExtraInput.BooleanInput("label boolean", "techboolean", true),
+                ExtraInput.FloatInput("label float", "techfloat", 1f),
+                ExtraInput.IntInput("label int", "techint", 1),
+                ExtraInput.ListStringInput("label array", "techarray", listOf("es", "fr")),
+                ExtraInput.StringInput("label json", "techjson", "{\"key\":\"value\"}"),
+                ExtraInput.StringInput("label enum", "techenum", "ONE", listOf("ONE", "TWO")),
+            )
+        ),
+        Configuration(
+            name = "CheckID variant1",
+            tag = "module1",
+            intentName = "adad",
+            prefix = "ad.",
+            extras = listOf(
+                ExtraInput.BooleanInput("label boolean", "techboolean3", true),
+                ExtraInput.StringInput("label enum", "techenum3", "ONE", listOf("ONE", "TWO")),
             )
         ),
         Configuration(
@@ -92,30 +89,67 @@ object Configurations {
             intentName = "SMUL-O2",
             prefix = "SMUL-O2.",
             extras = listOf(
-                ExtraInput("label boolean", "techboolean2", true),
-                ExtraInput("label float", "techfloat2", 1f),
-                ExtraInput("label int", "techint2", 1),
-                ExtraInput("label array", "techarray2", listOf("es", "fr")),
-                ExtraInput("label json", "techjson2", "{\"key\"=\"value\"}"),
-                ExtraInput("label enum", "techenum2", "ONE", listOf("ONE", "TWO")),
+                ExtraInput.BooleanInput("label boolean", "techboolean2", true),
+                ExtraInput.FloatInput("label float", "techfloat2", 1f),
+                ExtraInput.IntInput("label int", "techint2", 1),
+                ExtraInput.ListStringInput("label array", "techarray2", listOf("es", "fr")),
+                ExtraInput.StringInput("label json", "techjson2", "{\"key\":\"value\"}"),
+                ExtraInput.StringInput("label enum", "techenum2", "ONE", listOf("ONE", "TWO")),
             )
         ),
         Configuration(
-            name = "azerty",
-            tag = "module1",
+            name = "TaxReturn Shortcut",
+            tag = "module2",
             intentName = "adad",
             prefix = "ad.",
             extras = listOf(
-                ExtraInput("label boolean", "techboolean3", true),
-                ExtraInput("label enum", "techenum3", "ONE", listOf("ONE", "TWO")),
+                ExtraInput.BooleanInput("label boolean", "techboolean3", true),
+                ExtraInput.StringInput("label enum", "techenum3", "ONE", listOf("ONE", "TWO")),
             )
         ),
     )
 }
 
-data class ExtraInput(
-    val label: String,
-    val key: String,
-    val defaultValue: Any?,
-    val options: List<String>? = null,
+data class Configuration(
+    val name: String,
+    val tag: String,
+    val intentName: String,
+    val prefix: String,
+    val extras: List<ExtraInput>,
 )
+
+sealed class ExtraInput(
+    open val label: String,
+    open val key: String,
+) {
+    data class IntInput(
+        override val label: String,
+        override val key: String,
+        val defaultValue: Int,
+    ) : ExtraInput(label, key)
+
+    data class FloatInput(
+        override val label: String,
+        override val key: String,
+        val defaultValue: Float,
+    ) : ExtraInput(label, key)
+
+    data class StringInput(
+        override val label: String,
+        override val key: String,
+        val defaultValue: String,
+        val options: List<String>? = null
+    ) : ExtraInput(label, key)
+
+    data class BooleanInput(
+        override val label: String,
+        override val key: String,
+        val defaultValue: Boolean,
+    ) : ExtraInput(label, key)
+
+    data class ListStringInput(
+        override val label: String,
+        override val key: String,
+        val defaultValue: List<String>,
+    ) : ExtraInput(label, key)
+}
