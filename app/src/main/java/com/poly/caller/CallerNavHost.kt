@@ -40,13 +40,29 @@ fun CallerNavHost(
 }
 
 @Serializable
-sealed class Route()
+sealed class Route {
+    abstract val title: String
+}
 
 @Serializable
-data object HomeRoute : Route()
+data object BaseRoute : Route() {
+    override val title: String = ""
+}
 
 @Serializable
-data object ScreenARoute : Route()
+data object HomeRoute : Route() {
+    override val title: String
+        get() = "Home"
+}
 
 @Serializable
-data object ScreenBRoute : Route()
+data object ScreenARoute : Route() {
+    override val title: String
+        get() = "A"
+}
+
+@Serializable
+data object ScreenBRoute : Route() {
+    override val title: String
+        get() = "B"
+}

@@ -7,7 +7,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -17,9 +16,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -36,11 +35,13 @@ class MainActivity : ComponentActivity() {
             MaterialTheme {
                 Scaffold(
                     topBar = {
+                        val currentBackStackEntry by navController.currentBackStackEntryAsState()
+                        val currentDestination = currentBackStackEntry?.toRoute<BaseRoute>()
+
                         TopAppBar(
-                            title = { Text("Caller App") },
+                            title = { Text(currentDestination?.title ?: "") },
                             navigationIcon = {
-                                val currentBackStackEntry by navController.currentBackStackEntryAsState()
-                                if (currentBackStackEntry?.destination?.hasRoute<HomeRoute>() == false) {
+                                if (currentDestination?.title != "Home") {
                                     IconButton(onClick = { navController.popBackStack() }) {
                                         Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "Back")
                                     }
