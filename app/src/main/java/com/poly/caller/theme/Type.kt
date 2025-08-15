@@ -1,4 +1,4 @@
-package com.poly.caller.ui.theme
+package com.poly.caller.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

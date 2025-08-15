@@ -1,13 +1,13 @@
 package com.poly.caller
 
-import com.poly.caller.model.GetConfigurationsUsecase
-import com.poly.caller.model.InitConfigurationUsecase
-import com.poly.caller.model.LoadConfigurationUsecase
-import com.poly.caller.model.ObserveConfigurationUsecase
+import com.poly.caller.domain.GetConfigurationsUsecase
+import com.poly.caller.domain.InitConfigurationUsecase
+import com.poly.caller.domain.LoadConfigurationUsecase
+import com.poly.caller.domain.ObserveConfigurationUsecase
+import com.poly.caller.domain.SaveConfigurationUsecase
+import com.poly.caller.domain.UpdateConfigurationUsecase
 import com.poly.caller.model.PersistanceRepository
-import com.poly.caller.model.SaveConfigurationUsecase
 import com.poly.caller.model.SpecificRepository
-import com.poly.caller.model.UpdateConfigurationUsecase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

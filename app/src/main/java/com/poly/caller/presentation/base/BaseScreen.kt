@@ -1,4 +1,4 @@
-package com.poly.caller.base
+package com.poly.caller.presentation.base
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.paddingFromBaseline
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -26,14 +25,14 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.poly.caller.ArrayInput
-import com.poly.caller.BooleanInput
-import com.poly.caller.EnumInput
-import com.poly.caller.NumberInput
-import com.poly.caller.TextInput
-import com.poly.caller.components.Dropdown
-import com.poly.caller.components.SaveAsDialog
 import com.poly.caller.model.ExtraInput
+import com.poly.caller.presentation.components.ArrayInput
+import com.poly.caller.presentation.components.BooleanInput
+import com.poly.caller.presentation.components.Dropdown
+import com.poly.caller.presentation.components.EnumInput
+import com.poly.caller.presentation.components.NumberInput
+import com.poly.caller.presentation.components.SaveAsDialog
+import com.poly.caller.presentation.components.TextInput
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
@@ -156,7 +155,7 @@ private fun BaseScreen(
                 }
             }
 
-            if (state.showSaveAsDialog)
+            if (state.showSaveAsDialog) {
                 SaveAsDialog(
                     title = "Modifier " + config.name,
                     initialValue = config.name,
@@ -165,6 +164,7 @@ private fun BaseScreen(
                     },
                     onDismiss = { onEvent(BaseEvent.DissmisSaveAsDialog) }
                 )
+            }
         }
     }
 }

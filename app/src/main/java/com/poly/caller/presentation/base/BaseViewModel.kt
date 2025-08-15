@@ -1,23 +1,20 @@
-package com.poly.caller.base
+package com.poly.caller.presentation.base
 
-import android.R.attr.name
-import android.R.attr.tag
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.poly.caller.domain.GetConfigurationsUsecase
+import com.poly.caller.domain.InitConfigurationUsecase
+import com.poly.caller.domain.LoadConfigurationUsecase
+import com.poly.caller.domain.ObserveConfigurationUsecase
+import com.poly.caller.domain.SaveConfigurationUsecase
+import com.poly.caller.domain.UpdateConfigurationUsecase
 import com.poly.caller.model.Configuration
 import com.poly.caller.model.ExtraInput
-import com.poly.caller.model.GetConfigurationsUsecase
-import com.poly.caller.model.InitConfigurationUsecase
-import com.poly.caller.model.LoadConfigurationUsecase
-import com.poly.caller.model.ObserveConfigurationUsecase
-import com.poly.caller.model.SaveConfigurationUsecase
-import com.poly.caller.model.UpdateConfigurationUsecase
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 abstract class BaseViewModel(
     val initConfigurationUsecase: InitConfigurationUsecase,
@@ -82,10 +79,10 @@ abstract class BaseViewModel(
             config.tag == it?.tag && config.name == it.name
         }
 
-        // compare
-        var isModified = it != original
+        // compare actual configuration with original
+        val isModified = it != original
 
-        // all configuration from tag
+        // reload all configuration from the same module name (for dropdown selection)
         val allConfigFamily = getConfigurationsUsecase().filter { config ->
             config.tag == moduleName
         }.map { it.name }
@@ -93,7 +90,6 @@ abstract class BaseViewModel(
         // update UI
         _state.value = state.value.copy(false, it, isModified, allConfigFamily)
     }
-
 
     private fun reset() {
         _state.value.config?.let {
@@ -128,7 +124,7 @@ abstract class BaseViewModel(
                 extras = updatedExtras,
             )
 
-            // Mettre à jour la configuration
+            // update configuration
             updateConfigurationUsecase(updatedConfig)
         }
     }

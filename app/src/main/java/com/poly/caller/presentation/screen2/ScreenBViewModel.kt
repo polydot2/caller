@@ -1,12 +1,12 @@
-package com.poly.caller.screen2
+package com.poly.caller.presentation.screen2
 
-import com.poly.caller.base.BaseViewModel
-import com.poly.caller.model.GetConfigurationsUsecase
-import com.poly.caller.model.InitConfigurationUsecase
-import com.poly.caller.model.LoadConfigurationUsecase
-import com.poly.caller.model.ObserveConfigurationUsecase
-import com.poly.caller.model.SaveConfigurationUsecase
-import com.poly.caller.model.UpdateConfigurationUsecase
+import com.poly.caller.domain.GetConfigurationsUsecase
+import com.poly.caller.domain.InitConfigurationUsecase
+import com.poly.caller.domain.LoadConfigurationUsecase
+import com.poly.caller.domain.ObserveConfigurationUsecase
+import com.poly.caller.domain.SaveConfigurationUsecase
+import com.poly.caller.domain.UpdateConfigurationUsecase
+import com.poly.caller.presentation.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 

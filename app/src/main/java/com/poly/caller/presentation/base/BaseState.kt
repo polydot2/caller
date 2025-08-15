@@ -1,4 +1,4 @@
-package com.poly.caller.base
+package com.poly.caller.presentation.base
 
 import com.poly.caller.model.Configuration
 

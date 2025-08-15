@@ -5,9 +5,9 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.poly.caller.home.HomeScreen
-import com.poly.caller.screen1.ScreenAScreen
-import com.poly.caller.screen2.ScreenBScreen
+import com.poly.caller.presentation.home.HomeScreen
+import com.poly.caller.presentation.screen1.ScreenAScreen
+import com.poly.caller.presentation.screen2.ScreenBScreen
 import kotlinx.serialization.Serializable
 
 @Composable

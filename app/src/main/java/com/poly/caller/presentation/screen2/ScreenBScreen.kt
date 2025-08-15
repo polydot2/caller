@@ -1,9 +1,8 @@
-package com.poly.caller.screen2
+package com.poly.caller.presentation.screen2
 
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.poly.caller.base.BaseScreen
-import com.poly.caller.screen1.ScreenAViewModel
+import com.poly.caller.presentation.base.BaseScreen
 
 @Composable
 fun ScreenBScreen(

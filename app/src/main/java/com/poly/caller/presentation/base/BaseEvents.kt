@@ -1,4 +1,4 @@
-package com.poly.caller.base
+package com.poly.caller.presentation.base
 
 import com.poly.caller.model.ExtraInput
 
@@ -8,6 +8,6 @@ sealed interface BaseEvent {
     data class LoadAnotherCOnfiguration(val configurationToLoad: String) : BaseEvent
     data class SaveAs(val name: String) : BaseEvent
     data object Reset : BaseEvent
-    data object ShowSaveAsDialog: BaseEvent
-    data object DissmisSaveAsDialog: BaseEvent
+    data object ShowSaveAsDialog : BaseEvent
+    data object DissmisSaveAsDialog : BaseEvent
 }

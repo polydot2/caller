@@ -1,5 +1,8 @@
-package com.poly.caller.model
+package com.poly.caller.domain
 
+import com.poly.caller.model.Configuration
+import com.poly.caller.model.PersistanceRepository
+import com.poly.caller.model.SpecificRepository
 import kotlinx.coroutines.flow.StateFlow
 
 class UpdateConfigurationUsecase(

@@ -1,6 +1,5 @@
-package com.poly.caller.ui.theme
+package com.poly.caller.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme

@@ -1,12 +1,9 @@
 package com.poly.caller.model
 
 import android.R
-import android.R.attr.name
-import android.R.attr.tag
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlin.collections.firstOrNull
 
 
 class PersistanceRepository {
@@ -27,7 +24,7 @@ class PersistanceRepository {
     fun delete(name: String) {
         val existingConfiguration = Configurations.all.firstOrNull { it.name == name }
 
-        // already exist remove
+        // remove
         existingConfiguration?.let {
             Configurations.all.remove(it)
         }
@@ -56,7 +53,7 @@ class SpecificRepository(
     }
 
     fun load(name: String) {
-        if(moduleName == null)
+        if (moduleName == null)
             throw RuntimeException("moduleName is null, SpecificRepository.init must be called before load any configuration")
 
         configuration.value = persistance.getAll().firstOrNull { it.tag == moduleName && it.name == name }

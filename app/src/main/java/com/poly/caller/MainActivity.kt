@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -14,26 +15,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.ui.Modifier
-import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
-import dagger.hilt.android.AndroidEntryPoint
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.compose.currentBackStackEntryAsState
+import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -48,20 +35,19 @@ class MainActivity : ComponentActivity() {
 
             MaterialTheme {
                 Scaffold(
-                    topBar =
-                        {
-                            TopAppBar(
-                                title = { Text("Caller App") },
-                                navigationIcon = {
-                                    val currentBackStackEntry by navController.currentBackStackEntryAsState()
-                                    if (currentBackStackEntry?.destination?.hasRoute<HomeRoute>() == false) {
-                                        IconButton(onClick = { navController.popBackStack() }) {
-                                            Icon(Icons.Default.ArrowBack, contentDescription = "Back")
-                                        }
+                    topBar = {
+                        TopAppBar(
+                            title = { Text("Caller App") },
+                            navigationIcon = {
+                                val currentBackStackEntry by navController.currentBackStackEntryAsState()
+                                if (currentBackStackEntry?.destination?.hasRoute<HomeRoute>() == false) {
+                                    IconButton(onClick = { navController.popBackStack() }) {
+                                        Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "Back")
                                     }
                                 }
-                            )
-                        }
+                            }
+                        )
+                    }
                 ) { innerPadding ->
                     CallerNavHost(
                         modifier = Modifier.padding(innerPadding),
