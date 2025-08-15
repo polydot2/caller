@@ -1,41 +1,47 @@
 package com.poly.caller.base
 
+import android.R.attr.name
+import android.R.attr.tag
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.poly.caller.SpecificRepositoryFactory
 import com.poly.caller.model.Configuration
 import com.poly.caller.model.ExtraInput
-import com.poly.caller.model.GetConfigurationUsecase
+import com.poly.caller.model.GetConfigurationsUsecase
+import com.poly.caller.model.InitConfigurationUsecase
 import com.poly.caller.model.LoadConfigurationUsecase
 import com.poly.caller.model.ObserveConfigurationUsecase
-import com.poly.caller.model.PersistanceRepository
 import com.poly.caller.model.SaveConfigurationUsecase
-import com.poly.caller.model.SpecificRepository
+import com.poly.caller.model.UpdateConfigurationUsecase
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 abstract class BaseViewModel(
-    private val repositoryFactory: SpecificRepositoryFactory,
-    private val persistance: PersistanceRepository
+    val initConfigurationUsecase: InitConfigurationUsecase,
+    val updateConfigurationUsecase: UpdateConfigurationUsecase,
+    val observeConfigurationUsecase: ObserveConfigurationUsecase,
+    val loadConfigurationUsecase: LoadConfigurationUsecase,
+    val saveConfigurationUsecase: SaveConfigurationUsecase,
+    val getConfigurationsUsecase: GetConfigurationsUsecase,
 ) : ViewModel() {
 
+    abstract val defaultConfigurationName: String
     abstract val moduleName: String
-
-    private val specificRepository: SpecificRepository by lazy { repositoryFactory.create(moduleName) }
-    private val getConfigurationUsecase: GetConfigurationUsecase by lazy { GetConfigurationUsecase(specificRepository) }
-    private val saveConfigurationUsecase: SaveConfigurationUsecase by lazy { SaveConfigurationUsecase(specificRepository) }
-    private val observeConfigurationUsecase: ObserveConfigurationUsecase by lazy { ObserveConfigurationUsecase(specificRepository) }
-    private val loadConfigurationUsecase: LoadConfigurationUsecase by lazy { LoadConfigurationUsecase(specificRepository) }
 
     private val _state = MutableStateFlow(BaseScreenState(isLoading = true, null, false, listOf(), false))
     val state = _state.asStateFlow()
     private val _eventChannel = Channel<BaseEventFromVM>()
     val events = _eventChannel.receiveAsFlow()
 
-    init {
+    fun initWith(defaultConfigurationName: String, moduleName: String) {
+
+        // init repo
+        initConfigurationUsecase(defaultConfigurationName, moduleName)
+
+        // observe configuration
         viewModelScope.launch {
             observeConfigurationUsecase().collect {
                 updateView(it)
@@ -60,7 +66,7 @@ abstract class BaseViewModel(
             val currentConfig = _state.value.config ?: return@launch
 
             // save
-            persistance.save(name, currentConfig)
+            saveConfigurationUsecase(name, currentConfig)
 
             // reload useless.. current config is already updated
             loadConfiguration(name)
@@ -72,7 +78,7 @@ abstract class BaseViewModel(
 
     fun updateView(it: Configuration?) {
         // get original values
-        val original = persistance.get().first { config ->
+        val original = getConfigurationsUsecase().first { config ->
             config.tag == it?.tag && config.name == it.name
         }
 
@@ -80,7 +86,7 @@ abstract class BaseViewModel(
         var isModified = it != original
 
         // all configuration from tag
-        val allConfigFamily = persistance.get().filter { config ->
+        val allConfigFamily = getConfigurationsUsecase().filter { config ->
             config.tag == moduleName
         }.map { it.name }
 
@@ -91,7 +97,7 @@ abstract class BaseViewModel(
 
     private fun reset() {
         _state.value.config?.let {
-            loadConfigurationUsecase(it.name, it.tag)
+            loadConfigurationUsecase(it.name)
         }
     }
 
@@ -104,7 +110,7 @@ abstract class BaseViewModel(
     }
 
     private fun loadConfiguration(configurationToLoad: String) {
-        loadConfigurationUsecase(configurationToLoad, moduleName)
+        loadConfigurationUsecase(configurationToLoad)
     }
 
     private fun updateExtraInput(key: String, newValue: ExtraInput) {
@@ -123,7 +129,7 @@ abstract class BaseViewModel(
             )
 
             // Mettre à jour la configuration
-            saveConfigurationUsecase(updatedConfig)
+            updateConfigurationUsecase(updatedConfig)
         }
     }
 

@@ -1,17 +1,8 @@
 package com.poly.caller.model
 
 import kotlinx.coroutines.flow.StateFlow
-import javax.inject.Inject
 
-class GetConfigurationUsecase @Inject constructor(
-    private val repository: SpecificRepository
-) {
-    operator fun invoke(): Pair<String, Configuration?> {
-        return repository.name to repository.get()
-    }
-}
-
-class SaveConfigurationUsecase(
+class UpdateConfigurationUsecase(
     private val repository: SpecificRepository
 ) {
     operator fun invoke(configuration: Configuration) {
@@ -30,7 +21,31 @@ class ObserveConfigurationUsecase(
 class LoadConfigurationUsecase(
     private val repository: SpecificRepository
 ) {
+    operator fun invoke(name: String) {
+        return repository.load(name)
+    }
+}
+
+class InitConfigurationUsecase(
+    private val repository: SpecificRepository
+) {
     operator fun invoke(name: String, tag: String) {
-        return repository.load(name, tag)
+        return repository.init(name, tag)
+    }
+}
+
+class SaveConfigurationUsecase(
+    private val repository: PersistanceRepository
+) {
+    operator fun invoke(name: String, configuration: Configuration) {
+        return repository.save(name, configuration)
+    }
+}
+
+class GetConfigurationsUsecase(
+    private val repository: PersistanceRepository
+) {
+    operator fun invoke(): List<Configuration> {
+        return repository.getAll()
     }
 }

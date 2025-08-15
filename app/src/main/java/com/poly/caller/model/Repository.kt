@@ -1,5 +1,8 @@
 package com.poly.caller.model
 
+import android.R
+import android.R.attr.name
+import android.R.attr.tag
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -9,7 +12,7 @@ import kotlin.collections.firstOrNull
 class PersistanceRepository {
     val configurations = MutableStateFlow(Configurations.all)
 
-    fun get(): List<Configuration> {
+    fun getAll(): List<Configuration> {
         return configurations.value
     }
 
@@ -32,16 +35,16 @@ class PersistanceRepository {
 }
 
 class SpecificRepository(
-    val name: String
+    var persistance: PersistanceRepository
 ) {
-    init {
-        println("SpecificRepository created for module: $name")
-    }
+    private val configuration: MutableStateFlow<Configuration?> = MutableStateFlow(null)
 
-    private val configuration = MutableStateFlow(Configurations.all.firstOrNull { it.tag == name && it.name == "default" })
+    private var moduleName: String? = null
 
-    fun get(): Configuration? {
-        return configuration.value
+    fun init(name: String, tag: String) {
+        println("SpecificRepository created for module: ${R.attr.name}")
+        moduleName = tag
+        load(name)
     }
 
     fun update(configurationToSaved: Configuration) {
@@ -52,8 +55,11 @@ class SpecificRepository(
         return configuration.asStateFlow()
     }
 
-    fun load(name: String, tag: String) {
-        configuration.value = Configurations.all.firstOrNull { it.tag == tag && it.name == name }
+    fun load(name: String) {
+        if(moduleName == null)
+            throw RuntimeException("moduleName is null, SpecificRepository.init must be called before load any configuration")
+
+        configuration.value = persistance.getAll().firstOrNull { it.tag == moduleName && it.name == name }
     }
 }
 
