@@ -53,6 +53,7 @@ class MainActivity : ComponentActivity() {
                     CallerNavHost(
                         modifier = Modifier.padding(innerPadding),
                         navController = navController,
+                        finish = { finish() }
                     )
                 }
             }

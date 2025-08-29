@@ -1,21 +1,17 @@
 plugins {
-    alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
+    alias(libs.plugins.open.api)
 }
 
 android {
-    namespace = "com.poly.caller"
+    namespace = "com.poly.target"
     compileSdk = 36
     defaultConfig {
-        applicationId = "com.poly.caller"
         minSdk = 24
-        targetSdk = 35
-        versionCode = 1
-        versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -28,17 +24,18 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.17" // Doit correspondre à Kotlin 2.0.20
+        kotlinCompilerExtensionVersion = "1.5.17"
     }
     kotlin {
         jvmToolchain(21)
+        sourceSets.main {
+            kotlin.srcDir(file("build/generated/ksp/kotlin"))
+            kotlin.srcDir(file("build/generated/source/openapi"))
+        }
     }
 }
 
 dependencies {
-    implementation(project(":target"))
-    implementation(project(":annotation"))
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -65,11 +62,4 @@ dependencies {
 
     implementation(libs.hilt.navigation.compose)
     implementation(libs.navigation.compose)
-
-    implementation(project(":mylibrary"))
-}
-
-ksp {
-    arg("ksp.incremental", "true")
-    arg("ksp.incremental.intermodule", "true")
 }
